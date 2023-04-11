@@ -1,0 +1,12 @@
+D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Infra\bin\Debug\net6.0\ECommerce.Infra.deps.json
+D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Infra\bin\Debug\net6.0\ECommerce.Infra.dll
+D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Infra\bin\Debug\net6.0\ECommerce.Infra.pdb
+D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Infra\obj\Debug\net6.0\ECommerce.Infra.csproj.AssemblyReference.cache
+D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Infra\obj\Debug\net6.0\ECommerce.Infra.GeneratedMSBuildEditorConfig.editorconfig
+D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Infra\obj\Debug\net6.0\ECommerce.Infra.AssemblyInfoInputs.cache
+D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Infra\obj\Debug\net6.0\ECommerce.Infra.AssemblyInfo.cs
+D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Infra\obj\Debug\net6.0\ECommerce.Infra.csproj.CoreCompileInputs.cache
+D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Infra\obj\Debug\net6.0\ECommerce.Infra.dll
+D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Infra\obj\Debug\net6.0\refint\ECommerce.Infra.dll
+D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Infra\obj\Debug\net6.0\ECommerce.Infra.pdb
+D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Infra\obj\Debug\net6.0\ref\ECommerce.Infra.dll
