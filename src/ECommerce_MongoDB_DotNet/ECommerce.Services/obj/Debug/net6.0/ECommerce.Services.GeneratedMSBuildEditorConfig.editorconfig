@@ -8,4 +8,4 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = ECommerce.Services
-build_property.ProjectDir = D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Services\
+build_property.ProjectDir = D:\github\MongoDB_DotNet_6\src\ECommerce_MongoDB_DotNet\ECommerce.Services\

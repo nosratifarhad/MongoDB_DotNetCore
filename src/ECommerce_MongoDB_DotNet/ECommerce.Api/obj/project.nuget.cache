@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "8r6vt0azQMUhltL/6gRgohwM/cxBj78128b4Q5JwDAhXtD2RMPA+qVeewqtjEzQdHg7F5UMx+P3Vw5eOeEHRcw==",
+  "dgSpecHash": "Vpf67rjH0uM17sGbxyD8l1qdFpGh1oaap15jC7pnfKmn0jmLIu/eYcwWKdCJAs5GWD3DIGSuvG4wxqVTjTR2ow==",
   "success": true,
-  "projectFilePath": "D:\\github\\MongoDB_DotNet_6\\ECommerce_MongoDB_DotNet\\ECommerce.Api\\ECommerce.Api.csproj",
+  "projectFilePath": "D:\\github\\MongoDB_DotNet_6\\src\\ECommerce_MongoDB_DotNet\\ECommerce.Api\\ECommerce.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\f_nosrati\\.nuget\\packages\\microsoft.extensions.apidescription.server\\3.0.0\\microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
     "C:\\Users\\f_nosrati\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
