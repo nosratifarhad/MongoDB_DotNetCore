@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\github\\MongoDB_DotNet_6\\ECommerce_MongoDB_DotNet\\ECommerce.Infra\\ECommerce.Infra.csproj": {}
+    "D:\\github\\MongoDB_DotNet_6\\src\\ECommerce_MongoDB_DotNet\\ECommerce.Infra\\ECommerce.Infra.csproj": {}
   },
   "projects": {
-    "D:\\github\\MongoDB_DotNet_6\\ECommerce_MongoDB_DotNet\\ECommerce.Infra\\ECommerce.Infra.csproj": {
+    "D:\\github\\MongoDB_DotNet_6\\src\\ECommerce_MongoDB_DotNet\\ECommerce.Infra\\ECommerce.Infra.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\github\\MongoDB_DotNet_6\\ECommerce_MongoDB_DotNet\\ECommerce.Infra\\ECommerce.Infra.csproj",
+        "projectUniqueName": "D:\\github\\MongoDB_DotNet_6\\src\\ECommerce_MongoDB_DotNet\\ECommerce.Infra\\ECommerce.Infra.csproj",
         "projectName": "ECommerce.Infra",
-        "projectPath": "D:\\github\\MongoDB_DotNet_6\\ECommerce_MongoDB_DotNet\\ECommerce.Infra\\ECommerce.Infra.csproj",
+        "projectPath": "D:\\github\\MongoDB_DotNet_6\\src\\ECommerce_MongoDB_DotNet\\ECommerce.Infra\\ECommerce.Infra.csproj",
         "packagesPath": "C:\\Users\\f_nosrati\\.nuget\\packages\\",
-        "outputPath": "D:\\github\\MongoDB_DotNet_6\\ECommerce_MongoDB_DotNet\\ECommerce.Infra\\obj\\",
+        "outputPath": "D:\\github\\MongoDB_DotNet_6\\src\\ECommerce_MongoDB_DotNet\\ECommerce.Infra\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

@@ -230,11 +230,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\github\\MongoDB_DotNet_6\\ECommerce_MongoDB_DotNet\\ECommerce.Api\\ECommerce.Api.csproj",
+      "projectUniqueName": "D:\\github\\MongoDB_DotNet_6\\src\\ECommerce_MongoDB_DotNet\\ECommerce.Api\\ECommerce.Api.csproj",
       "projectName": "ECommerce.Api",
-      "projectPath": "D:\\github\\MongoDB_DotNet_6\\ECommerce_MongoDB_DotNet\\ECommerce.Api\\ECommerce.Api.csproj",
+      "projectPath": "D:\\github\\MongoDB_DotNet_6\\src\\ECommerce_MongoDB_DotNet\\ECommerce.Api\\ECommerce.Api.csproj",
       "packagesPath": "C:\\Users\\f_nosrati\\.nuget\\packages\\",
-      "outputPath": "D:\\github\\MongoDB_DotNet_6\\ECommerce_MongoDB_DotNet\\ECommerce.Api\\obj\\",
+      "outputPath": "D:\\github\\MongoDB_DotNet_6\\src\\ECommerce_MongoDB_DotNet\\ECommerce.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

@@ -10,3 +10,15 @@ D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Services\obj\Debug
 D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Services\obj\Debug\net6.0\refint\ECommerce.Services.dll
 D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Services\obj\Debug\net6.0\ECommerce.Services.pdb
 D:\github\MongoDB_DotNet_6\ECommerce_MongoDB_DotNet\ECommerce.Services\obj\Debug\net6.0\ref\ECommerce.Services.dll
+D:\github\MongoDB_DotNet_6\src\ECommerce_MongoDB_DotNet\ECommerce.Services\bin\Debug\net6.0\ECommerce.Services.deps.json
+D:\github\MongoDB_DotNet_6\src\ECommerce_MongoDB_DotNet\ECommerce.Services\bin\Debug\net6.0\ECommerce.Services.dll
+D:\github\MongoDB_DotNet_6\src\ECommerce_MongoDB_DotNet\ECommerce.Services\bin\Debug\net6.0\ECommerce.Services.pdb
+D:\github\MongoDB_DotNet_6\src\ECommerce_MongoDB_DotNet\ECommerce.Services\obj\Debug\net6.0\ECommerce.Services.csproj.AssemblyReference.cache
+D:\github\MongoDB_DotNet_6\src\ECommerce_MongoDB_DotNet\ECommerce.Services\obj\Debug\net6.0\ECommerce.Services.GeneratedMSBuildEditorConfig.editorconfig
+D:\github\MongoDB_DotNet_6\src\ECommerce_MongoDB_DotNet\ECommerce.Services\obj\Debug\net6.0\ECommerce.Services.AssemblyInfoInputs.cache
+D:\github\MongoDB_DotNet_6\src\ECommerce_MongoDB_DotNet\ECommerce.Services\obj\Debug\net6.0\ECommerce.Services.AssemblyInfo.cs
+D:\github\MongoDB_DotNet_6\src\ECommerce_MongoDB_DotNet\ECommerce.Services\obj\Debug\net6.0\ECommerce.Services.csproj.CoreCompileInputs.cache
+D:\github\MongoDB_DotNet_6\src\ECommerce_MongoDB_DotNet\ECommerce.Services\obj\Debug\net6.0\ECommerce.Services.dll
+D:\github\MongoDB_DotNet_6\src\ECommerce_MongoDB_DotNet\ECommerce.Services\obj\Debug\net6.0\refint\ECommerce.Services.dll
+D:\github\MongoDB_DotNet_6\src\ECommerce_MongoDB_DotNet\ECommerce.Services\obj\Debug\net6.0\ECommerce.Services.pdb
+D:\github\MongoDB_DotNet_6\src\ECommerce_MongoDB_DotNet\ECommerce.Services\obj\Debug\net6.0\ref\ECommerce.Services.dll

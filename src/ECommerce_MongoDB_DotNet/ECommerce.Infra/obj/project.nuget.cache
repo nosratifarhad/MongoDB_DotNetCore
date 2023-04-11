@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "267pLiV9CN6inupNWaisQf1eyO0/wIlx06f9BF9v3LLUk2ER6WR0TX1RK2vuj+tRfsrflkoKmnb7CqUwCkKGsA==",
+  "dgSpecHash": "81X+kanKF6xH8uyQMt25Fb+koKgFfhPmoyJW3OPJeE8hoEOCtT615GLzs/LI0sHXvHmHeXKdX1RhnCMzxdElWA==",
   "success": true,
-  "projectFilePath": "D:\\github\\MongoDB_DotNet_6\\ECommerce_MongoDB_DotNet\\ECommerce.Infra\\ECommerce.Infra.csproj",
+  "projectFilePath": "D:\\github\\MongoDB_DotNet_6\\src\\ECommerce_MongoDB_DotNet\\ECommerce.Infra\\ECommerce.Infra.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
