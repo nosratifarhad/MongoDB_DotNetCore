@@ -1,8 +1,8 @@
-﻿namespace ECommerce.Service.InputModels.ProductInputModels;
+﻿namespace ECommerce.Api.Dtos;
 
-public class UpdateProductInputModel
+public class ProductDto
 {
-    public string ProductId { get; set; }
+    public int ProductId { get; set; }
 
     public string ProductName { get; set; }
 
@@ -21,5 +21,4 @@ public class UpdateProductInputModel
     public bool IsExisting { get; set; }
 
     public int Weight { get; set; }
-
 }

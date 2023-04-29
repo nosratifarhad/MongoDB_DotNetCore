@@ -1,10 +1,11 @@
-﻿using ECommerce.Domain.Products.Enums;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
 
 namespace ECommerce.Service.ViewModels.ProductViewModels
 {
-    public class ProductViewModel
+    public class ProductModel
     {
-        public int ProductId { get; set; }
+        public string ProductId { get; set; }
 
         public string ProductName { get; set; }
 
@@ -12,15 +13,11 @@ namespace ECommerce.Service.ViewModels.ProductViewModels
 
         public string ProductDescription { get; set; }
 
-        public ProductCategory ProductCategory { get; set; }
-
         public string MainImageName { get; set; }
 
         public string MainImageTitle { get; set; }
 
         public string MainImageUri { get; set; }
-
-        public ProductColor Color { get; set; }
 
         public bool IsFreeDelivery { get; set; }
 

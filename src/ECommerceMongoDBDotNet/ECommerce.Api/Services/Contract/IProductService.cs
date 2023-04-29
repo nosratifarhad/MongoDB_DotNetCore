@@ -11,9 +11,9 @@ namespace ECommerce.Api.Services.Contract
 
         Task DeleteProductAsync(int productId);
 
-        Task<ProductViewModel> GetProduct(int productId);
+        Task<ProductModel> GetProduct(int productId);
 
-        Task<IEnumerable<ProductViewModel>> GetProducts();
+        Task<IEnumerable<ProductModel>> GetProducts();
 
     }
 }

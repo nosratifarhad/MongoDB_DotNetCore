@@ -1,5 +1,4 @@
 ﻿using ECommerce.Api.Services.Contract;
-using ECommerce.Service.Contract;
 using ECommerce.Service.InputModels.ProductInputModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -68,7 +67,7 @@ namespace ECommerce.Api.Controllers
         [HttpPut("/api/product/{productId:int}")]
         public async Task<IActionResult> UpdateProduct(int productId, UpdateProductInputModel inputModel)
         {
-            if (productId != inputModel.ProductId)
+            if (productId.ToString() != inputModel.ProductId)
                 return BadRequest();
 
             await _productService.UpdateProductAsync(inputModel).ConfigureAwait(false);
