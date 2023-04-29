@@ -1,4 +1,5 @@
-﻿using ECommerce.Service.Contract;
+﻿using ECommerce.Api.Services.Contract;
+using ECommerce.Service.Contract;
 using ECommerce.Service.InputModels.ProductInputModels;
 using Microsoft.AspNetCore.Mvc;
 

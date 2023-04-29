@@ -1,4 +1,6 @@
-﻿using ECommerce.Domain.Products;
+﻿using ECommerce.Api.Services;
+using ECommerce.Api.Services.Contract;
+using ECommerce.Domain.Products;
 using ECommerce.Infra.Repositorys;
 using ECommerce.Service.Contract;
 using ECommerce.Service.Services;

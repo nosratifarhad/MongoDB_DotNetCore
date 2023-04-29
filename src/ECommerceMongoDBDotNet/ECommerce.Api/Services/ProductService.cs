@@ -1,28 +1,37 @@
-﻿using ECommerce.Domain.Products;
+﻿using ECommerce.Api.Services.Contract;
+using ECommerce.Domain.Products;
 using ECommerce.Domain.Products.Dtos.ProductDtos;
 using ECommerce.Domain.Products.Entitys;
 using ECommerce.Service.Contract;
 using ECommerce.Service.InputModels.ProductInputModels;
 using ECommerce.Service.ViewModels.ProductViewModels;
+using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace ECommerce.Service.Services
+namespace ECommerce.Api.Services
 {
     public class ProductService : IProductService
     {
         #region Fields
-        private readonly IProductReadRepository _productReadRepository;
-        private readonly IProductWriteRepository _productWriteRepository;
+
+        private readonly IMongoCollection<ProductViewModel> _ProductsCollection;
         #endregion Fields
 
         #region Ctor
 
-        public ProductService(IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository)
+        public ProductService(IOptions<ProductDatabaseSettings> bookStoreDatabaseSettings)
         {
-            _productReadRepository = productReadRepository;
-            _productWriteRepository = productWriteRepository;
+            var mongoClient = new MongoClient(
+          ProductDatabaseSettings.Value.ConnectionString);
+
+            var mongoDatabase = mongoClient.GetDatabase(
+                ProductDatabaseSettings.Value.DatabaseName);
+
+            _booksCollection = mongoDatabase.GetCollection<ProductViewModel>(
+                ProductDatabaseSettings.Value.BooksCollectionName);
         }
 
         #endregion Ctor
@@ -136,7 +145,7 @@ namespace ECommerce.Service.Services
                      });
 
 
-            return (IEnumerable<ProductViewModel>)productViewModels;
+            return productViewModels;
         }
 
         private void ValidateProductName(string productName)
