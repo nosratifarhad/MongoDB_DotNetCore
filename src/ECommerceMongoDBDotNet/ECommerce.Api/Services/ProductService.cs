@@ -1,45 +1,44 @@
-﻿using ECommerce.Api.Services.Contract;
-using ECommerce.Domain.Products;
-using ECommerce.Domain.Products.Dtos.ProductDtos;
-using ECommerce.Domain.Products.Entitys;
-using ECommerce.Service.Contract;
+﻿using ECommerce.Api.Dtos;
+using ECommerce.Api.Entitys;
+using ECommerce.Api.MongoWrappers.Contracts;
+using ECommerce.Api.Repositorys.ReadRepository;
+using ECommerce.Api.Repositorys.WriteRepository;
+using ECommerce.Api.Services.Contract;
 using ECommerce.Service.InputModels.ProductInputModels;
 using ECommerce.Service.ViewModels.ProductViewModels;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace ECommerce.Api.Services
 {
     public class ProductService : IProductService
     {
         #region Fields
+        private readonly IMongoWrapper _mongoWrapper;
 
-        private readonly IMongoCollection<ProductViewModel> _ProductsCollection;
+        private readonly IProductReadRepository _productReadRepository;
+        private readonly IProductWriteRepository _productWriteRepository;
+
         #endregion Fields
 
         #region Ctor
 
-        public ProductService(IOptions<ProductDatabaseSettings> bookStoreDatabaseSettings)
+        public ProductService(IMongoWrapper mongoWrapper,
+            IProductReadRepository productReadRepository, 
+            IProductWriteRepository productWriteRepository)
         {
-            var mongoClient = new MongoClient(
-          ProductDatabaseSettings.Value.ConnectionString);
-
-            var mongoDatabase = mongoClient.GetDatabase(
-                ProductDatabaseSettings.Value.DatabaseName);
-
-            _booksCollection = mongoDatabase.GetCollection<ProductViewModel>(
-                ProductDatabaseSettings.Value.BooksCollectionName);
+            _mongoWrapper = mongoWrapper;
+            _productReadRepository = productReadRepository;
+            _productWriteRepository = productWriteRepository;
         }
 
         #endregion Ctor
 
         #region Implement
 
-        public async Task<ProductViewModel> GetProduct(int productId)
+        public async Task<ProductModel> GetProduct(int productId)
         {
+
+            var mongoProductDto = await _mongoWrapper.GetAsync(productId.ToString()).ConfigureAwait(false);
+
             var productDto = await _productReadRepository.GetProduct(productId).ConfigureAwait(false);
 
             var productViewModel = CreateProductViewModelFromProductDto(productDto);
@@ -47,11 +46,13 @@ namespace ECommerce.Api.Services
             return productViewModel;
         }
 
-        public async Task<IEnumerable<ProductViewModel>> GetProducts()
+        public async Task<IEnumerable<ProductModel>> GetProducts()
         {
             var productDtos = await _productReadRepository.GetProducts().ConfigureAwait(false);
             if (productDtos == null || productDtos.Count() == 0)
-                return Enumerable.Empty<ProductViewModel>();
+                return Enumerable.Empty<ProductModel>();
+
+            var mongoProductDtos = await _mongoWrapper.GetAsync().ConfigureAwait(false);
 
             var productViewModels = CreateProductViewModelsFromProductDtos(productDtos);
 
@@ -66,6 +67,10 @@ namespace ECommerce.Api.Services
 
             var productEntoty = CreateProductEntityFromInputModel(inputModel);
 
+            var mongoModel = ToProductModel(inputModel);
+
+            await _mongoWrapper.CreateAsync(mongoModel).ConfigureAwait(false);
+
             return await _productWriteRepository.CreateProductAsync(productEntoty).ConfigureAwait(false);
         }
 
@@ -75,15 +80,21 @@ namespace ECommerce.Api.Services
 
             ValidateProductTitle(inputModel.ProductTitle);
 
-            await IsExistProduct(inputModel.ProductId).ConfigureAwait(false);
+            await IsExistProduct(int.Parse(inputModel.ProductId)).ConfigureAwait(false);
 
             var productEntoty = CreateProductEntityFromInputModel(inputModel);
+
+            var mongoModel = ToProductModel(inputModel);
+
+            await _mongoWrapper.UpdateAsync(inputModel.ProductId.ToString(), mongoModel).ConfigureAwait(false);
 
             await _productWriteRepository.UpdateProductAsync(productEntoty).ConfigureAwait(false);
         }
 
         public async Task DeleteProductAsync(int productId)
         {
+            await _mongoWrapper.RemoveAsync(productId.ToString());
+
             await _productWriteRepository.DeleteProductAsync(productId).ConfigureAwait(false);
         }
 
@@ -99,46 +110,42 @@ namespace ECommerce.Api.Services
         }
 
         private Product CreateProductEntityFromInputModel(CreateProductInputModel inputModel)
-            => new Product(inputModel.ProductName, inputModel.ProductTitle, inputModel.ProductDescription, inputModel.ProductCategory, inputModel.MainImageName, inputModel.MainImageTitle, inputModel.MainImageUri, inputModel.Color, inputModel.IsExisting, inputModel.IsFreeDelivery, inputModel.Weight);
+            => new Product(inputModel.ProductName, inputModel.ProductTitle, inputModel.ProductDescription, inputModel.MainImageName, inputModel.MainImageTitle, inputModel.MainImageUri, inputModel.IsExisting, inputModel.IsFreeDelivery, inputModel.Weight);
 
         private Product CreateProductEntityFromInputModel(UpdateProductInputModel inputModel)
-            => new Product(inputModel.ProductId, inputModel.ProductName, inputModel.ProductTitle, inputModel.ProductDescription, inputModel.ProductCategory, inputModel.MainImageName, inputModel.MainImageTitle, inputModel.MainImageUri, inputModel.Color, inputModel.IsExisting, inputModel.IsFreeDelivery, inputModel.Weight);
+            => new Product(int.Parse(inputModel.ProductId), inputModel.ProductName, inputModel.ProductTitle, inputModel.ProductDescription, inputModel.MainImageName, inputModel.MainImageTitle, inputModel.MainImageUri, inputModel.IsExisting, inputModel.IsFreeDelivery, inputModel.Weight);
 
-        private ProductViewModel CreateProductViewModelFromProductDto(ProductDto dto)
-            => new ProductViewModel()
+        private ProductModel CreateProductViewModelFromProductDto(ProductDto dto)
+            => new ProductModel()
             {
-                ProductId = dto.ProductId,
+                ProductId = dto.ProductId.ToString(),
                 ProductName = dto.ProductName,
                 ProductTitle = dto.ProductTitle,
                 ProductDescription = dto.ProductDescription,
-                ProductCategory = dto.ProductCategory,
                 MainImageName = dto.MainImageName,
                 MainImageTitle = dto.MainImageTitle,
                 MainImageUri = dto.MainImageUri,
-                Color = dto.Color,
                 IsExisting = dto.IsExisting,
                 IsFreeDelivery = dto.IsFreeDelivery,
                 Weight = dto.Weight
             };
 
-        private IEnumerable<ProductViewModel> CreateProductViewModelsFromProductDtos(IEnumerable<ProductDto> dtos)
+        private IEnumerable<ProductModel> CreateProductViewModelsFromProductDtos(IEnumerable<ProductDto> dtos)
         {
-            ICollection<ProductViewModel> productViewModels = new List<ProductViewModel>();
+            ICollection<ProductModel> productViewModels = new List<ProductModel>();
 
             foreach (var ProductDto in dtos)
                 productViewModels.Add(
-                     new ProductViewModel()
+                     new ProductModel()
                      {
 
-                         ProductId = ProductDto.ProductId,
+                         ProductId = ProductDto.ProductId.ToString(),
                          ProductName = ProductDto.ProductName,
                          ProductTitle = ProductDto.ProductTitle,
                          ProductDescription = ProductDto.ProductDescription,
-                         ProductCategory = ProductDto.ProductCategory,
                          MainImageName = ProductDto.MainImageName,
                          MainImageTitle = ProductDto.MainImageTitle,
                          MainImageUri = ProductDto.MainImageUri,
-                         Color = ProductDto.Color,
                          IsExisting = ProductDto.IsExisting,
                          IsFreeDelivery = ProductDto.IsFreeDelivery,
                          Weight = ProductDto.Weight
@@ -159,6 +166,37 @@ namespace ECommerce.Api.Services
             if (string.IsNullOrEmpty(productTitle) || string.IsNullOrWhiteSpace(productTitle))
                 throw new ArgumentNullException(nameof(productTitle), "Product Title must not be empty");
         }
+
+
+        private ProductModel ToProductModel(UpdateProductInputModel inputModel)
+            => new ProductModel()
+            {
+                ProductId = inputModel.ProductId,
+                ProductName = inputModel.ProductName,
+                ProductTitle = inputModel.ProductTitle,
+                ProductDescription = inputModel.ProductDescription,
+                MainImageName = inputModel.MainImageName,
+                MainImageTitle = inputModel.MainImageTitle,
+                MainImageUri = inputModel.MainImageUri,
+                IsExisting = inputModel.IsExisting,
+                IsFreeDelivery = inputModel.IsFreeDelivery,
+                Weight = inputModel.Weight
+
+            };
+
+        private ProductModel ToProductModel(CreateProductInputModel inputModel)
+            => new ProductModel()
+            {
+                ProductName = inputModel.ProductName,
+                ProductTitle = inputModel.ProductTitle,
+                ProductDescription = inputModel.ProductDescription,
+                MainImageName = inputModel.MainImageName,
+                MainImageTitle = inputModel.MainImageTitle,
+                MainImageUri = inputModel.MainImageUri,
+                IsExisting = inputModel.IsExisting,
+                IsFreeDelivery = inputModel.IsFreeDelivery,
+            };
+
 
         #endregion Private
     }
