@@ -1,11 +1,10 @@
-﻿using ECommerce.Api.Dtos;
-using ECommerce.Api.Entitys;
+﻿using ECommerce.Api.Domain;
+using ECommerce.Api.Domain.Dtos;
+using ECommerce.Api.Domain.Entitys;
 using ECommerce.Api.MongoWrappers.Contracts;
-using ECommerce.Api.Repositorys.ReadRepository;
-using ECommerce.Api.Repositorys.WriteRepository;
 using ECommerce.Api.Services.Contract;
+using ECommerce.Api.ViewModels.ProductViewModels;
 using ECommerce.Service.InputModels.ProductInputModels;
-using ECommerce.Service.ViewModels.ProductViewModels;
 
 namespace ECommerce.Api.Services
 {
@@ -22,7 +21,7 @@ namespace ECommerce.Api.Services
         #region Ctor
 
         public ProductService(IMongoWrapper mongoWrapper,
-            IProductReadRepository productReadRepository, 
+            IProductReadRepository productReadRepository,
             IProductWriteRepository productWriteRepository)
         {
             _mongoWrapper = mongoWrapper;
@@ -34,25 +33,36 @@ namespace ECommerce.Api.Services
 
         #region Implement
 
-        public async Task<ProductModel> GetProduct(int productId)
+        public async ValueTask<ProductViewModel> GetProductAsync(int productId)
         {
+            if (productId <= 0)
+                throw new NullReferenceException("Product Id Is Invalid");
 
-            var mongoProductDto = await _mongoWrapper.GetAsync(productId.ToString()).ConfigureAwait(false);
+            var cacheResult = await GetFromCacheAsync(productId);
+            if (cacheResult != null)
+                return cacheResult;
 
-            var productDto = await _productReadRepository.GetProduct(productId).ConfigureAwait(false);
+            var productDto = await _productReadRepository.GetProductAsync(productId).ConfigureAwait(false);
+            if (productDto == null)
+                return new ProductViewModel();
 
             var productViewModel = CreateProductViewModelFromProductDto(productDto);
+
+            await SetInToCacheAsync(productViewModel).ConfigureAwait(false);
 
             return productViewModel;
         }
 
-        public async Task<IEnumerable<ProductModel>> GetProducts()
+        public async ValueTask<IEnumerable<ProductViewModel>> GetProductsAsync()
         {
-            var productDtos = await _productReadRepository.GetProducts().ConfigureAwait(false);
-            if (productDtos == null || productDtos.Count() == 0)
-                return Enumerable.Empty<ProductModel>();
+            var cacheResult = await GetFromCacheAsync();
+            if (cacheResult != null)
+                return cacheResult;
 
-            var mongoProductDtos = await _mongoWrapper.GetAsync().ConfigureAwait(false);
+            var productDtos = await _productReadRepository.GetProductsAsync().ConfigureAwait(false);
+
+            if (productDtos == null || productDtos.Count() == 0)
+                return Enumerable.Empty<ProductViewModel>();
 
             var productViewModels = CreateProductViewModelsFromProductDtos(productDtos);
 
@@ -61,64 +71,101 @@ namespace ECommerce.Api.Services
 
         public async Task<int> CreateProductAsync(CreateProductInputModel inputModel)
         {
+            if (inputModel == null)
+                throw new NullReferenceException("Product Id Is Invalid");
+
             ValidateProductName(inputModel.ProductName);
 
             ValidateProductTitle(inputModel.ProductTitle);
 
             var productEntoty = CreateProductEntityFromInputModel(inputModel);
 
-            var mongoModel = ToProductModel(inputModel);
+            int productId = await _productWriteRepository.CreateProductAsync(productEntoty).ConfigureAwait(false);
 
-            await _mongoWrapper.CreateAsync(mongoModel).ConfigureAwait(false);
+            productEntoty.setProductId(productId);
 
-            return await _productWriteRepository.CreateProductAsync(productEntoty).ConfigureAwait(false);
+            await SetInToCacheAsync(productEntoty).ConfigureAwait(false);
+
+            return productId;
         }
 
         public async Task UpdateProductAsync(UpdateProductInputModel inputModel)
         {
+            if (inputModel.ProductId <= 0)
+                throw new NullReferenceException("ProductId Is Invalid.");
+
             ValidateProductName(inputModel.ProductName);
 
             ValidateProductTitle(inputModel.ProductTitle);
 
-            await IsExistProduct(int.Parse(inputModel.ProductId)).ConfigureAwait(false);
+            await IsExistProduct(inputModel.ProductId).ConfigureAwait(false);
 
             var productEntoty = CreateProductEntityFromInputModel(inputModel);
 
-            var mongoModel = ToProductModel(inputModel);
-
-            await _mongoWrapper.UpdateAsync(inputModel.ProductId.ToString(), mongoModel).ConfigureAwait(false);
-
             await _productWriteRepository.UpdateProductAsync(productEntoty).ConfigureAwait(false);
+
+            DeleteCacheAsync(inputModel.ProductId);
+
+            await UpdateCacheAsync(inputModel.ProductId, productEntoty).ConfigureAwait(false);
         }
 
         public async Task DeleteProductAsync(int productId)
         {
-            await _mongoWrapper.RemoveAsync(productId.ToString());
+            if (productId <= 0)
+                throw new NullReferenceException("ProductId Is Invalid.");
+
+            await IsExistProduct(productId).ConfigureAwait(false);
 
             await _productWriteRepository.DeleteProductAsync(productId).ConfigureAwait(false);
+
+            DeleteCacheAsync(productId);
         }
 
         #endregion Implement
+
+        #region [ Cache Private Method ]
+
+        private async Task SetInToCacheAsync(ProductViewModel result)
+            => await _mongoWrapper
+                 .CreateAsync(result);
+
+        private async Task<ProductViewModel> GetFromCacheAsync(int id)
+            => await _mongoWrapper
+                .GetAsync(id);
+
+        private async Task<IEnumerable<ProductViewModel>> GetFromCacheAsync()
+            => await _mongoWrapper
+                .GetAsync();
+
+        private async Task UpdateCacheAsync(int id, ProductViewModel product)
+            => await _mongoWrapper
+                .UpdateAsync(id, product);
+
+        private async void DeleteCacheAsync(int id)
+           => await _mongoWrapper.RemoveAsync(id);
+
+
+        #endregion [ Cache Private Method ]
 
         #region Private
 
         private async Task IsExistProduct(int productId)
         {
-            var isExistProduct = await _productReadRepository.IsExistProduct(productId).ConfigureAwait(false);
+            var isExistProduct = await _productReadRepository.IsExistProductAsync(productId).ConfigureAwait(false);
             if (isExistProduct == false)
-                throw new Exception("productId Is Not Found.");
+                throw new NullReferenceException("ProductId Is Not Found.");
         }
 
         private Product CreateProductEntityFromInputModel(CreateProductInputModel inputModel)
             => new Product(inputModel.ProductName, inputModel.ProductTitle, inputModel.ProductDescription, inputModel.MainImageName, inputModel.MainImageTitle, inputModel.MainImageUri, inputModel.IsExisting, inputModel.IsFreeDelivery, inputModel.Weight);
 
         private Product CreateProductEntityFromInputModel(UpdateProductInputModel inputModel)
-            => new Product(int.Parse(inputModel.ProductId), inputModel.ProductName, inputModel.ProductTitle, inputModel.ProductDescription, inputModel.MainImageName, inputModel.MainImageTitle, inputModel.MainImageUri, inputModel.IsExisting, inputModel.IsFreeDelivery, inputModel.Weight);
+            => new Product(inputModel.ProductId, inputModel.ProductName, inputModel.ProductTitle, inputModel.ProductDescription, inputModel.MainImageName, inputModel.MainImageTitle, inputModel.MainImageUri, inputModel.IsExisting, inputModel.IsFreeDelivery, inputModel.Weight);
 
-        private ProductModel CreateProductViewModelFromProductDto(ProductDto dto)
-            => new ProductModel()
+        private ProductViewModel CreateProductViewModelFromProductDto(ProductDto dto)
+            => new ProductViewModel()
             {
-                ProductId = dto.ProductId.ToString(),
+                ProductId = dto.ProductId,
                 ProductName = dto.ProductName,
                 ProductTitle = dto.ProductTitle,
                 ProductDescription = dto.ProductDescription,
@@ -130,16 +177,15 @@ namespace ECommerce.Api.Services
                 Weight = dto.Weight
             };
 
-        private IEnumerable<ProductModel> CreateProductViewModelsFromProductDtos(IEnumerable<ProductDto> dtos)
+        private IEnumerable<ProductViewModel> CreateProductViewModelsFromProductDtos(IEnumerable<ProductDto> dtos)
         {
-            ICollection<ProductModel> productViewModels = new List<ProductModel>();
+            ICollection<ProductViewModel> productViewModels = new List<ProductViewModel>();
 
             foreach (var ProductDto in dtos)
                 productViewModels.Add(
-                     new ProductModel()
+                     new ProductViewModel()
                      {
-
-                         ProductId = ProductDto.ProductId.ToString(),
+                         ProductId = ProductDto.ProductId,
                          ProductName = ProductDto.ProductName,
                          ProductTitle = ProductDto.ProductTitle,
                          ProductDescription = ProductDto.ProductDescription,
@@ -152,50 +198,20 @@ namespace ECommerce.Api.Services
                      });
 
 
-            return productViewModels;
+            return (IEnumerable<ProductViewModel>)productViewModels;
         }
 
         private void ValidateProductName(string productName)
         {
             if (string.IsNullOrEmpty(productName) || string.IsNullOrWhiteSpace(productName))
-                throw new ArgumentNullException(nameof(productName), "Product Name must not be empty");
+                throw new ArgumentException(nameof(productName), "Product Name cannot be nul.l");
         }
 
         private void ValidateProductTitle(string productTitle)
         {
             if (string.IsNullOrEmpty(productTitle) || string.IsNullOrWhiteSpace(productTitle))
-                throw new ArgumentNullException(nameof(productTitle), "Product Title must not be empty");
+                throw new ArgumentException(nameof(productTitle), "Product Title cannot be null.");
         }
-
-
-        private ProductModel ToProductModel(UpdateProductInputModel inputModel)
-            => new ProductModel()
-            {
-                ProductId = inputModel.ProductId,
-                ProductName = inputModel.ProductName,
-                ProductTitle = inputModel.ProductTitle,
-                ProductDescription = inputModel.ProductDescription,
-                MainImageName = inputModel.MainImageName,
-                MainImageTitle = inputModel.MainImageTitle,
-                MainImageUri = inputModel.MainImageUri,
-                IsExisting = inputModel.IsExisting,
-                IsFreeDelivery = inputModel.IsFreeDelivery,
-                Weight = inputModel.Weight
-
-            };
-
-        private ProductModel ToProductModel(CreateProductInputModel inputModel)
-            => new ProductModel()
-            {
-                ProductName = inputModel.ProductName,
-                ProductTitle = inputModel.ProductTitle,
-                ProductDescription = inputModel.ProductDescription,
-                MainImageName = inputModel.MainImageName,
-                MainImageTitle = inputModel.MainImageTitle,
-                MainImageUri = inputModel.MainImageUri,
-                IsExisting = inputModel.IsExisting,
-                IsFreeDelivery = inputModel.IsFreeDelivery,
-            };
 
 
         #endregion Private
