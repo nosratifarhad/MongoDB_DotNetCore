@@ -1,5 +1,6 @@
-﻿using WebApplicationRedis.Domain;
-using WebApplicationRedis.Domain.Entitys;
+﻿
+using ECommerce.Api.Domain;
+using ECommerce.Api.Domain.Entitys;
 
 namespace WebApplicationRedis.Repositorys
 {

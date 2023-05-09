@@ -1,17 +1,18 @@
 ﻿using ECommerce.Api.Domain;
 using ECommerce.Api.Domain.Dtos;
 using ECommerce.Api.Domain.Entitys;
-using ECommerce.Api.MongoWrappers.Contracts;
+using ECommerce.Api.Repositorys.CacheRepository.Contracts;
 using ECommerce.Api.Services.Contract;
 using ECommerce.Api.ViewModels.ProductViewModels;
 using ECommerce.Service.InputModels.ProductInputModels;
+using System.Globalization;
 
 namespace ECommerce.Api.Services
 {
     public class ProductService : IProductService
     {
         #region Fields
-        private readonly IMongoWrapper _mongoWrapper;
+        private readonly IMongoCacheRepository _mongoCacheRepository;
 
         private readonly IProductReadRepository _productReadRepository;
         private readonly IProductWriteRepository _productWriteRepository;
@@ -20,11 +21,11 @@ namespace ECommerce.Api.Services
 
         #region Ctor
 
-        public ProductService(IMongoWrapper mongoWrapper,
+        public ProductService(IMongoCacheRepository mongoCacheRepository,
             IProductReadRepository productReadRepository,
             IProductWriteRepository productWriteRepository)
         {
-            _mongoWrapper = mongoWrapper;
+            _mongoCacheRepository = mongoCacheRepository;
             _productReadRepository = productReadRepository;
             _productWriteRepository = productWriteRepository;
         }
@@ -38,7 +39,7 @@ namespace ECommerce.Api.Services
             if (productId <= 0)
                 throw new NullReferenceException("Product Id Is Invalid");
 
-            var cacheResult = await GetFromCacheAsync(productId);
+            var cacheResult = await GetFromCacheAsync(productId.ToString());
             if (cacheResult != null)
                 return cacheResult;
 
@@ -66,6 +67,8 @@ namespace ECommerce.Api.Services
 
             var productViewModels = CreateProductViewModelsFromProductDtos(productDtos);
 
+            await SetManyInToCacheAsync(productViewModels);
+
             return productViewModels;
         }
 
@@ -84,7 +87,9 @@ namespace ECommerce.Api.Services
 
             productEntoty.setProductId(productId);
 
-            await SetInToCacheAsync(productEntoty).ConfigureAwait(false);
+            var productViewModel = CreateProductViewModelFromProductEntity(productEntoty);
+
+            await SetInToCacheAsync(productViewModel).ConfigureAwait(false);
 
             return productId;
         }
@@ -103,10 +108,12 @@ namespace ECommerce.Api.Services
             var productEntoty = CreateProductEntityFromInputModel(inputModel);
 
             await _productWriteRepository.UpdateProductAsync(productEntoty).ConfigureAwait(false);
+            
+            var productViewModel = CreateProductViewModelFromProductEntity(productEntoty);
 
-            DeleteCacheAsync(inputModel.ProductId);
+            DeleteCacheAsync(productViewModel.Id);
 
-            await UpdateCacheAsync(inputModel.ProductId, productEntoty).ConfigureAwait(false);
+            await SetInToCacheAsync(productViewModel).ConfigureAwait(false);
         }
 
         public async Task DeleteProductAsync(int productId)
@@ -118,7 +125,7 @@ namespace ECommerce.Api.Services
 
             await _productWriteRepository.DeleteProductAsync(productId).ConfigureAwait(false);
 
-            DeleteCacheAsync(productId);
+            DeleteCacheAsync(productId.ToString());
         }
 
         #endregion Implement
@@ -126,23 +133,23 @@ namespace ECommerce.Api.Services
         #region [ Cache Private Method ]
 
         private async Task SetInToCacheAsync(ProductViewModel result)
-            => await _mongoWrapper
+            => await _mongoCacheRepository
                  .CreateAsync(result);
 
-        private async Task<ProductViewModel> GetFromCacheAsync(int id)
-            => await _mongoWrapper
+        private async Task SetManyInToCacheAsync(IEnumerable<ProductViewModel> results)
+            => await _mongoCacheRepository
+                 .CreateManyAsync(results);
+
+        private async Task<ProductViewModel> GetFromCacheAsync(string id)
+            => await _mongoCacheRepository
                 .GetAsync(id);
 
         private async Task<IEnumerable<ProductViewModel>> GetFromCacheAsync()
-            => await _mongoWrapper
+            => await _mongoCacheRepository
                 .GetAsync();
 
-        private async Task UpdateCacheAsync(int id, ProductViewModel product)
-            => await _mongoWrapper
-                .UpdateAsync(id, product);
-
-        private async void DeleteCacheAsync(int id)
-           => await _mongoWrapper.RemoveAsync(id);
+        private async void DeleteCacheAsync(string id)
+           => await _mongoCacheRepository.RemoveAsync(id);
 
 
         #endregion [ Cache Private Method ]
@@ -165,7 +172,7 @@ namespace ECommerce.Api.Services
         private ProductViewModel CreateProductViewModelFromProductDto(ProductDto dto)
             => new ProductViewModel()
             {
-                ProductId = dto.ProductId,
+                Id = dto.ProductId.ToString(),
                 ProductName = dto.ProductName,
                 ProductTitle = dto.ProductTitle,
                 ProductDescription = dto.ProductDescription,
@@ -177,6 +184,21 @@ namespace ECommerce.Api.Services
                 Weight = dto.Weight
             };
 
+        private ProductViewModel CreateProductViewModelFromProductEntity(Product product)
+            => new ProductViewModel()
+            {
+                Id = product.ProductId.ToString(),
+                ProductName = product.ProductName,
+                ProductTitle = product.ProductTitle,
+                ProductDescription = product.ProductDescription,
+                MainImageName = product.MainImageName,
+                MainImageTitle = product.MainImageTitle,
+                MainImageUri = product.MainImageUri,
+                IsExisting = product.IsExisting,
+                IsFreeDelivery = product.IsFreeDelivery,
+                Weight = product.Weight
+            };
+
         private IEnumerable<ProductViewModel> CreateProductViewModelsFromProductDtos(IEnumerable<ProductDto> dtos)
         {
             ICollection<ProductViewModel> productViewModels = new List<ProductViewModel>();
@@ -185,7 +207,7 @@ namespace ECommerce.Api.Services
                 productViewModels.Add(
                      new ProductViewModel()
                      {
-                         ProductId = ProductDto.ProductId,
+                         Id = ProductDto.ProductId.ToString(),
                          ProductName = ProductDto.ProductName,
                          ProductTitle = ProductDto.ProductTitle,
                          ProductDescription = ProductDto.ProductDescription,
