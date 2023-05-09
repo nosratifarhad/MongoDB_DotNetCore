@@ -35,7 +35,7 @@ public class MongoCacheRepository : IMongoCacheRepository
         => await _ProductsCollection.InsertOneAsync(productViewModel);
 
     public async Task CreateManyAsync(IEnumerable<ProductViewModel> productViewModels)
-     => await _ProductsCollection.InsertManyAsync(productViewModels);
+        => await _ProductsCollection.InsertManyAsync(productViewModels);
 
     public async Task<List<ProductViewModel>> GetAsync()
         => await _ProductsCollection.Find(_ => true).ToListAsync();
