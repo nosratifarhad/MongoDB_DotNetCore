@@ -4,9 +4,7 @@
 ```
 dotnet add package MongoDB.Driver
 ```
-
 ### add database connection setting in appsettings.json
-
 ```json
   "ProductDatabaseSettings": {
     "ConnectionString": "mongodb://localhost:27017",
@@ -16,7 +14,6 @@ dotnet add package MongoDB.Driver
 ```
 
 ### add setting configure to service
-
 ```csharp
 // Add services to the container.
 builder.Services.Configure<ProductDatabaseSettings>(
@@ -24,7 +21,6 @@ builder.Services.Configure<ProductDatabaseSettings>(
 ```
 
 ### you need wapper for use mongodb collection from service
-
 ```csharp
 public interface IMongoCacheRepository
 {
@@ -68,7 +64,6 @@ public MongoCacheRepository(IOptions<ProductDatabaseSettings> settings)
 ```
 
 ### now you can use collection 
-
 ```csharp
 public async Task CreateAsync(ProductViewModel productViewModel)
     => await _ProductsCollection.InsertOneAsync(productViewModel);
@@ -85,10 +80,22 @@ public async Task<ProductViewModel?> GetAsync(string id)
 public async Task RemoveAsync(string id)
     => await _ProductsCollection.FindOneAndDeleteAsync(p => p.Id == id);
 ```
+## Note : you can see how to can use mongodb in service layer
 
-### you can see how to can use mongodb in service layer
-------------------------------
+============================
 ### images : 
+
+### swagger api
+![My Remote Image](https://github.com/nosratifarhad/MongoDB/blob/main/imgs/Annotation2.jpg)
+
+### insert in to sql and mongodb and return new productId 
+![My Remote Image](https://github.com/nosratifarhad/MongoDB/blob/main/imgs/Annotation4.jpg)
+
+### mongodb collection Items
+![My Remote Image](https://github.com/nosratifarhad/MongoDB/blob/main/imgs/Annotation3.jpg)
+
+### get result api
+![My Remote Image](https://github.com/nosratifarhad/MongoDB/blob/main/imgs/Annotation1.jpg)
 
 
 
