@@ -1,19 +1,17 @@
-﻿using ECommerce.Service.InputModels.ProductInputModels;
-using ECommerce.Service.ViewModels.ProductViewModels;
+﻿using ECommerce.Api.ViewModels.ProductViewModels;
 
-namespace ECommerce.Api.MongoWrappers.Contracts
+namespace ECommerce.Api.MongoWrappers.Contracts;
+
+public interface IMongoWrapper
 {
-    public interface IMongoWrapper
-    {
-        Task<List<ProductModel>> GetAsync();
+    Task<List<ProductViewModel>> GetAsync();
 
-        Task<ProductModel?> GetAsync(string id);
+    Task<ProductViewModel> GetAsync(int id);
 
-        Task CreateAsync(ProductModel productViewModel);
+    Task CreateAsync(ProductViewModel product);
 
-        Task UpdateAsync(string id, ProductModel productViewModel);
+    Task UpdateAsync(int id, ProductViewModel product);
 
-        Task RemoveAsync(string id);
+    Task RemoveAsync(int id);
 
-    }
 }

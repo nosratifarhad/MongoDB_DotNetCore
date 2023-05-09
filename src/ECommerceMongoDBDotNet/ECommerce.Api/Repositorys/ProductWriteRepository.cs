@@ -1,24 +1,24 @@
-﻿using ECommerce.Api.Entitys;
-using ECommerce.Api.Repositorys.WriteRepository;
+﻿using WebApplicationRedis.Domain;
+using WebApplicationRedis.Domain.Entitys;
 
-namespace ECommerce.Api.Repositorys.Info
+namespace WebApplicationRedis.Repositorys
 {
     public class ProductWriteRepository : IProductWriteRepository
     {
         public async Task<int> CreateProductAsync(Product product)
         {
-            await Task.Delay(100);
-            return 1;
+            await Task.Delay(1000);
+            return Random.Shared.Next();
         }
 
         public async Task DeleteProductAsync(int productId)
         {
-            await Task.Delay(100);
+            await Task.Delay(1000);
         }
 
         public async Task UpdateProductAsync(Product product)
         {
-            await Task.Delay(100);
+            await Task.Delay(1000);
         }
     }
 }

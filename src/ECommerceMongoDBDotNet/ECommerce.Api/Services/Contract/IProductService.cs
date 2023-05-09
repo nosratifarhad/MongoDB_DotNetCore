@@ -1,5 +1,5 @@
-﻿using ECommerce.Service.InputModels.ProductInputModels;
-using ECommerce.Service.ViewModels.ProductViewModels;
+﻿using ECommerce.Api.ViewModels.ProductViewModels;
+using ECommerce.Service.InputModels.ProductInputModels;
 
 namespace ECommerce.Api.Services.Contract
 {
@@ -11,9 +11,9 @@ namespace ECommerce.Api.Services.Contract
 
         Task DeleteProductAsync(int productId);
 
-        Task<ProductModel> GetProduct(int productId);
+        ValueTask<ProductViewModel> GetProductAsync(int productId);
 
-        Task<IEnumerable<ProductModel>> GetProducts();
+        ValueTask<IEnumerable<ProductViewModel>> GetProductsAsync();
 
     }
 }
