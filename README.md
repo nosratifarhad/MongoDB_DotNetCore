@@ -26,86 +26,69 @@ builder.Services.Configure<ProductDatabaseSettings>(
 ### you need wapper for use mongodb collection from service
 
 ```csharp
-public interface IMongoWrapper
+public interface IMongoCacheRepository
 {
-    Task<List<ProductModel>> GetAsync();
+    Task<List<ProductViewModel>> GetAsync();
 
-    Task<ProductModel?> GetAsync(string id);
+    Task<ProductViewModel> GetAsync(string id);
 
-    Task CreateAsync(ProductModel productViewModel);
+    Task CreateAsync(ProductViewModel product);
 
-    Task UpdateAsync(string id, ProductModel productViewModel);
+    Task CreateManyAsync(IEnumerable<ProductViewModel> productViewModels);
 
     Task RemoveAsync(string id);
-
 }
 ```
 
 ### you should be add dependency injection in Program.cs file :
-
 ```csharp
-#region [ Wrapper ]
-
-builder.Services.AddScoped<IMongoWrapper, MongoWrapper>();
-
-#endregion [ Wrapper ]
+builder.Services.AddScoped<IMongoCacheRepository, MongoCacheRepository>();
 ```
 
 ### for use collections you should add this code in implementation wrapper
 
 ```csharp
-    #region Fields
+#region Fields
+private readonly IMongoCollection<ProductViewModel> _ProductsCollection;
+#endregion Fields
 
-    private readonly IMongoCollection<ProductModel> _ProductsCollection;
+#region Ctor
+public MongoCacheRepository(IOptions<ProductDatabaseSettings> settings)
+{
+    var mongoClient = new MongoClient(
+  settings.Value.ConnectionString);
 
-    #endregion Fields
+    var mongoDatabase = mongoClient.GetDatabase(
+        settings.Value.DatabaseName);
 
-    #region Ctor
-
-    public MongoWrapper(IOptions<ProductDatabaseSettings> settings)
-    {
-        var mongoClient = new MongoClient(
-      settings.Value.ConnectionString);
-
-        var mongoDatabase = mongoClient.GetDatabase(
-            settings.Value.DatabaseName);
-
-        _ProductsCollection = mongoDatabase.GetCollection<ProductModel>(
-            settings.Value.ProductsCollectionName);
-    }
-
-    #endregion Ctor
+    _ProductsCollection = mongoDatabase.GetCollection<ProductViewModel>(
+        settings.Value.ProductsCollectionName);
+}
+#endregion Ctor
 ```
-
 
 ### now you can use collection 
 
 ```csharp
-    public async Task CreateAsync(ProductModel productViewModel)
-        => await _ProductsCollection.InsertOneAsync(productViewModel);
+public async Task CreateAsync(ProductViewModel productViewModel)
+    => await _ProductsCollection.InsertOneAsync(productViewModel);
 
-    public async Task<List<ProductModel>> GetAsync()
-        => await _ProductsCollection.Find(_ => true).ToListAsync();
+public async Task CreateManyAsync(IEnumerable<ProductViewModel> productViewModels)
+    => await _ProductsCollection.InsertManyAsync(productViewModels);
 
-    public async Task<ProductModel?> GetAsync(string id)
-        => await _ProductsCollection.Find(x => x.ProductId == id).FirstOrDefaultAsync();
+public async Task<List<ProductViewModel>> GetAsync()
+    => await _ProductsCollection.Find(_ => true).ToListAsync();
 
-    public async Task RemoveAsync(string id)
-        => await _ProductsCollection.DeleteOneAsync(id);
+public async Task<ProductViewModel?> GetAsync(string id)
+    => await _ProductsCollection.Find(x => x.Id == id.ToString()).FirstOrDefaultAsync();
 
-    public Task UpdateAsync(string id, ProductModel productViewModel)
-        => _ProductsCollection.ReplaceOneAsync(p => p.ProductId == id, productViewModel);
+public async Task RemoveAsync(string id)
+    => await _ProductsCollection.FindOneAndDeleteAsync(p => p.Id == id);
 ```
 
+### you can see how to can use mongodb in service layer
+------------------------------
 ### images : 
 
-### swagger api
-![My Remote Image](https://github.com/nosratifarhad/MongoDB/blob/main/imgs/Annotation2.jpg)
-
-### send request for insert in mongodb
-![My Remote Image](https://github.com/nosratifarhad/MongoDB/blob/main/imgs/Annotation4.jpg)
-
-### insert in collection mongodb 
-![My Remote Image](https://github.com/nosratifarhad/MongoDB/blob/main/imgs/Annotation1.jpg)
 
 
