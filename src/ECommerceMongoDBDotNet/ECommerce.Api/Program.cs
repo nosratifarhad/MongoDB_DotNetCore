@@ -1,11 +1,10 @@
 using ECommerce.Api.Helpers;
-using ECommerce.Api.Repositorys.ReadRepository;
-using ECommerce.Api.Repositorys.WriteRepository;
 using ECommerce.Api.Services.Contract;
 using ECommerce.Api.Services;
-using ECommerce.Api.MongoWrappers.Contracts;
-using ECommerce.Api.MongoWrappers;
-using ECommerce.Api.Repositorys.Info;
+using ECommerce.Api.Repositorys.CacheRepository.Contracts;
+using ECommerce.Api.Repositorys.CacheRepository;
+using ECommerce.Api.Domain;
+using WebApplicationRedis.Repositorys;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,11 +26,11 @@ builder.Services.AddScoped<IProductService, ProductService>();
 
 #endregion [Application]
 
-#region [ Wrapper ]
+#region [ Cache ]
 
-builder.Services.AddScoped<IMongoWrapper, MongoWrapper>();
+builder.Services.AddScoped<IMongoCacheRepository, MongoCacheRepository>();
 
-#endregion [ Wrapper ]
+#endregion [ Cache ]
 
 #region [ Infra - Data ]
 
