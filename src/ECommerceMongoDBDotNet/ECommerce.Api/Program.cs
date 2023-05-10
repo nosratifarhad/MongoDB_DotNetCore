@@ -1,10 +1,10 @@
 using ECommerce.Api.Helpers;
 using ECommerce.Api.Services.Contract;
 using ECommerce.Api.Services;
-using ECommerce.Api.Repositorys.CacheRepository.Contracts;
-using ECommerce.Api.Repositorys.CacheRepository;
 using ECommerce.Api.Domain;
-using WebApplicationRedis.Repositorys;
+using ECommerce.Api.Infra.repositories.CacheRepository.Contracts;
+using ECommerce.Api.Infra.repositories.CacheRepository;
+using ECommerce.Api.Infra.repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

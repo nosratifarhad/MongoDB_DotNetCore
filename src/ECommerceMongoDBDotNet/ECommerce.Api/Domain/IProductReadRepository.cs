@@ -1,12 +1,12 @@
-﻿using ECommerce.Api.Domain.Dtos;
+﻿using ECommerce.Api.Domain.Entitys;
 
 namespace ECommerce.Api.Domain;
 
 public interface IProductReadRepository
 {
-    Task<ProductDto> GetProductAsync(int productId);
+    Task<Product> GetProductAsync(int productId);
 
-    Task<IEnumerable<ProductDto>> GetProductsAsync();
+    Task<IEnumerable<Product>> GetProductsAsync();
 
     Task<bool> IsExistProductAsync(int productId);
 }
