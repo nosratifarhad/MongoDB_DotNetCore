@@ -1,6 +1,6 @@
 ﻿using ECommerce.Api.ViewModels.ProductViewModels;
 
-namespace ECommerce.Api.Infra.repositories.CacheRepository.Contracts;
+namespace ECommerce.Api.Domain;
 
 public interface IMongoCacheRepository
 {

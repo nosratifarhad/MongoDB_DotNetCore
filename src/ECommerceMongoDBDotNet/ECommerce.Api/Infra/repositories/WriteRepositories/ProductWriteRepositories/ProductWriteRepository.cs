@@ -1,7 +1,7 @@
 ﻿using ECommerce.Api.Domain;
 using ECommerce.Api.Domain.Entitys;
 
-namespace ECommerce.Api.Infra.repositories
+namespace ECommerce.Api.Infra.Repositories.WriteRepositories.ProductWriteRepositories
 {
     public class ProductWriteRepository : IProductWriteRepository
     {
