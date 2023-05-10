@@ -37,7 +37,7 @@ namespace ECommerce.Api.Controllers
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        [HttpPost("/api/product")]
+        [HttpPost("/api/products")]
         public async Task<IActionResult> CreateProduct(CreateProductInputModel inputModel)
         {
             int productId = await _productService.CreateProductAsync(inputModel).ConfigureAwait(false);
@@ -50,7 +50,7 @@ namespace ECommerce.Api.Controllers
         /// </summary>
         /// <param name="productId"></param>
         /// <returns></returns>
-        [HttpGet("/api/product/{productId:int}", Name = nameof(GetProduct))]
+        [HttpGet("/api/products/{productId:int}", Name = nameof(GetProduct))]
         public async Task<IActionResult> GetProduct(int productId)
         {
             var product =await _productService.GetProductAsync(productId).ConfigureAwait(false);
@@ -64,7 +64,7 @@ namespace ECommerce.Api.Controllers
         /// <param name="productId"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        [HttpPut("/api/product/{productId:int}")]
+        [HttpPut("/api/products/{productId:int}")]
         public async Task<IActionResult> UpdateProduct(int productId, UpdateProductInputModel inputModel)
         {
             if (productId != inputModel.ProductId)
@@ -80,7 +80,7 @@ namespace ECommerce.Api.Controllers
         /// </summary>
         /// <param name="productId"></param>
         /// <returns></returns>
-        [HttpDelete("/api/product/{productId:int}")]
+        [HttpDelete("/api/products/{productId:int}")]
         public async Task<IActionResult> DeleteProduct(int productId)
         {
             await _productService.DeleteProductAsync(productId).ConfigureAwait(false);

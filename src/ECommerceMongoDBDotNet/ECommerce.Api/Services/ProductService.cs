@@ -1,7 +1,6 @@
 ﻿using ECommerce.Api.Domain;
-using ECommerce.Api.Domain.Dtos;
 using ECommerce.Api.Domain.Entitys;
-using ECommerce.Api.Repositorys.CacheRepository.Contracts;
+using ECommerce.Api.Infra.repositories.CacheRepository.Contracts;
 using ECommerce.Api.Services.Contract;
 using ECommerce.Api.ViewModels.ProductViewModels;
 using ECommerce.Service.InputModels.ProductInputModels;
@@ -43,11 +42,11 @@ namespace ECommerce.Api.Services
             if (cacheResult != null)
                 return cacheResult;
 
-            var productDto = await _productReadRepository.GetProductAsync(productId).ConfigureAwait(false);
-            if (productDto == null)
+            var product = await _productReadRepository.GetProductAsync(productId).ConfigureAwait(false);
+            if (product == null)
                 return new ProductViewModel();
 
-            var productViewModel = CreateProductViewModelFromProductDto(productDto);
+            var productViewModel = CreateProductViewModelFromProduct(product);
 
             await SetInToCacheAsync(productViewModel).ConfigureAwait(false);
 
@@ -60,12 +59,12 @@ namespace ECommerce.Api.Services
             if (cacheResult != null)
                 return cacheResult;
 
-            var productDtos = await _productReadRepository.GetProductsAsync().ConfigureAwait(false);
+            var products = await _productReadRepository.GetProductsAsync().ConfigureAwait(false);
 
-            if (productDtos == null || productDtos.Count() == 0)
+            if (products == null || products.Count() == 0)
                 return Enumerable.Empty<ProductViewModel>();
 
-            var productViewModels = CreateProductViewModelsFromProductDtos(productDtos);
+            var productViewModels = CreateProductViewModelsFromProducts(products);
 
             await SetManyInToCacheAsync(productViewModels);
 
@@ -169,19 +168,19 @@ namespace ECommerce.Api.Services
         private Product CreateProductEntityFromInputModel(UpdateProductInputModel inputModel)
             => new Product(inputModel.ProductId, inputModel.ProductName, inputModel.ProductTitle, inputModel.ProductDescription, inputModel.MainImageName, inputModel.MainImageTitle, inputModel.MainImageUri, inputModel.IsExisting, inputModel.IsFreeDelivery, inputModel.Weight);
 
-        private ProductViewModel CreateProductViewModelFromProductDto(ProductDto dto)
+        private ProductViewModel CreateProductViewModelFromProduct(Product product)
             => new ProductViewModel()
             {
-                Id = dto.ProductId.ToString(),
-                ProductName = dto.ProductName,
-                ProductTitle = dto.ProductTitle,
-                ProductDescription = dto.ProductDescription,
-                MainImageName = dto.MainImageName,
-                MainImageTitle = dto.MainImageTitle,
-                MainImageUri = dto.MainImageUri,
-                IsExisting = dto.IsExisting,
-                IsFreeDelivery = dto.IsFreeDelivery,
-                Weight = dto.Weight
+                Id = product.ProductId.ToString(),
+                ProductName = product.ProductName,
+                ProductTitle = product.ProductTitle,
+                ProductDescription = product.ProductDescription,
+                MainImageName = product.MainImageName,
+                MainImageTitle = product.MainImageTitle,
+                MainImageUri = product.MainImageUri,
+                IsExisting = product.IsExisting,
+                IsFreeDelivery = product.IsFreeDelivery,
+                Weight = product.Weight
             };
 
         private ProductViewModel CreateProductViewModelFromProductEntity(Product product)
@@ -199,24 +198,24 @@ namespace ECommerce.Api.Services
                 Weight = product.Weight
             };
 
-        private IEnumerable<ProductViewModel> CreateProductViewModelsFromProductDtos(IEnumerable<ProductDto> dtos)
+        private IEnumerable<ProductViewModel> CreateProductViewModelsFromProducts(IEnumerable<Product> products)
         {
             ICollection<ProductViewModel> productViewModels = new List<ProductViewModel>();
 
-            foreach (var ProductDto in dtos)
+            foreach (var product in products)
                 productViewModels.Add(
                      new ProductViewModel()
                      {
-                         Id = ProductDto.ProductId.ToString(),
-                         ProductName = ProductDto.ProductName,
-                         ProductTitle = ProductDto.ProductTitle,
-                         ProductDescription = ProductDto.ProductDescription,
-                         MainImageName = ProductDto.MainImageName,
-                         MainImageTitle = ProductDto.MainImageTitle,
-                         MainImageUri = ProductDto.MainImageUri,
-                         IsExisting = ProductDto.IsExisting,
-                         IsFreeDelivery = ProductDto.IsFreeDelivery,
-                         Weight = ProductDto.Weight
+                         Id = product.ProductId.ToString(),
+                         ProductName = product.ProductName,
+                         ProductTitle = product.ProductTitle,
+                         ProductDescription = product.ProductDescription,
+                         MainImageName = product.MainImageName,
+                         MainImageTitle = product.MainImageTitle,
+                         MainImageUri = product.MainImageUri,
+                         IsExisting = product.IsExisting,
+                         IsFreeDelivery = product.IsFreeDelivery,
+                         Weight = product.Weight
                      });
 
 
