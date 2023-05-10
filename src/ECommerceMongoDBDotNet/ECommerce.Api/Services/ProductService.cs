@@ -1,6 +1,5 @@
 ﻿using ECommerce.Api.Domain;
 using ECommerce.Api.Domain.Entitys;
-using ECommerce.Api.Infra.repositories.CacheRepository.Contracts;
 using ECommerce.Api.Services.Contract;
 using ECommerce.Api.ViewModels.ProductViewModels;
 using ECommerce.Service.InputModels.ProductInputModels;

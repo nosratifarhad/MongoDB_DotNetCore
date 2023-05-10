@@ -1,10 +1,10 @@
-﻿using ECommerce.Api.Helpers;
-using ECommerce.Api.Infra.repositories.CacheRepository.Contracts;
+﻿using ECommerce.Api.Domain;
+using ECommerce.Api.Helpers;
 using ECommerce.Api.ViewModels.ProductViewModels;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace ECommerce.Api.Infra.repositories.CacheRepository;
+namespace ECommerce.Api.Infra.Repositories.CacheRepositories.MongoCacheRepositories;
 
 public class MongoCacheRepository : IMongoCacheRepository
 {

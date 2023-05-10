@@ -2,9 +2,9 @@ using ECommerce.Api.Helpers;
 using ECommerce.Api.Services.Contract;
 using ECommerce.Api.Services;
 using ECommerce.Api.Domain;
-using ECommerce.Api.Infra.repositories.CacheRepository.Contracts;
-using ECommerce.Api.Infra.repositories.CacheRepository;
-using ECommerce.Api.Infra.repositories;
+using ECommerce.Api.Infra.Repositories.CacheRepositories.MongoCacheRepositories;
+using ECommerce.Api.Infra.Repositories.ReadRepositories.ProductReadRepositories;
+using ECommerce.Api.Infra.Repositories.WriteRepositories.ProductWriteRepositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
