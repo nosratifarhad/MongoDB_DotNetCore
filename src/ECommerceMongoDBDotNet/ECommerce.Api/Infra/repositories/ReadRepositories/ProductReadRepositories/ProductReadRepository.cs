@@ -1,5 +1,6 @@
 ﻿using ECommerce.Api.Domain;
 using ECommerce.Api.Domain.Entitys;
+using System.Collections.Generic;
 
 namespace ECommerce.Api.Infra.Repositories.ReadRepositories.ProductReadRepositories
 {
@@ -11,6 +12,15 @@ namespace ECommerce.Api.Infra.Repositories.ReadRepositories.ProductReadRepositor
             => new Product("inputModel.ProductName", "inputModel.ProductTitle", "inputModel.ProductDescription",
             "inputModel.MainImageName", "inputModel.MainImageTitle", "inputModel.MainImageUri", true,
             true, 0));
+        }
+
+        public async Task<List<Product>> GetProductByFilterAsync(string id, string productName, string productTitle)
+        {
+            return await Task.Run(()
+                 => new List<Product>(){
+                new Product("inputModel.ProductName", "inputModel.ProductTitle", "inputModel.ProductDescription",
+                 "inputModel.MainImageName", "inputModel.MainImageTitle", "inputModel.MainImageUri", true,
+                 true, 0)});
         }
 
         public async Task<IEnumerable<Product>> GetProductsAsync()

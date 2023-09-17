@@ -13,6 +13,8 @@ namespace ECommerce.Api.Services.Contract
 
         ValueTask<ProductViewModel> GetProductAsync(int productId);
 
+        Task<List<ProductViewModel>> GetProductByFilterAsync(string id, string productName, string productTitle);
+
         ValueTask<IEnumerable<ProductViewModel>> GetProductsAsync();
 
     }

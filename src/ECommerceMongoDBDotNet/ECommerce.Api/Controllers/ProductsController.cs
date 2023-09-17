@@ -1,4 +1,5 @@
-﻿using ECommerce.Api.Services.Contract;
+﻿using ECommerce.Api.InputModels.Queries;
+using ECommerce.Api.Services.Contract;
 using ECommerce.Service.InputModels.ProductInputModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +16,7 @@ namespace ECommerce.Api.Controllers
         #region Ctor
         public ProductsController(IProductService productService)
         {
-           this._productService = productService;
+            this._productService = productService;
         }
 
         #endregion Ctor
@@ -28,7 +29,7 @@ namespace ECommerce.Api.Controllers
         public async Task<IActionResult> GetProducts()
         {
             var productVMs = await _productService.GetProductsAsync().ConfigureAwait(false);
-            
+
             return Ok(productVMs);
         }
 
@@ -53,7 +54,20 @@ namespace ECommerce.Api.Controllers
         [HttpGet("/api/products/{productId:int}", Name = nameof(GetProduct))]
         public async Task<IActionResult> GetProduct(int productId)
         {
-            var product =await _productService.GetProductAsync(productId).ConfigureAwait(false);
+            var product = await _productService.GetProductAsync(productId).ConfigureAwait(false);
+
+            return Ok(product);
+        }
+
+        /// <summary>
+        /// Get Product By Filter
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        [HttpGet("/api/products", Name = nameof(GetProductByFilterAsync))]
+        public async Task<IActionResult> GetProductByFilterAsync([FromQuery] GetProductByFilterQuery query)
+        {
+            var product = await _productService.GetProductByFilterAsync(query.Id, query.ProductName, query.ProductTitle).ConfigureAwait(false);
 
             return Ok(product);
         }
@@ -84,7 +98,7 @@ namespace ECommerce.Api.Controllers
         public async Task<IActionResult> DeleteProduct(int productId)
         {
             await _productService.DeleteProductAsync(productId).ConfigureAwait(false);
-            
+
             return NoContent();
         }
 

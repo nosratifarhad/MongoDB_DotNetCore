@@ -30,7 +30,7 @@ namespace ECommerce.Api.Services
 
         #endregion Ctor
 
-        #region Implement
+        #region [ Implement ]
 
         public async ValueTask<ProductViewModel> GetProductAsync(int productId)
         {
@@ -106,7 +106,7 @@ namespace ECommerce.Api.Services
             var productEntoty = CreateProductEntityFromInputModel(inputModel);
 
             await _productWriteRepository.UpdateProductAsync(productEntoty).ConfigureAwait(false);
-            
+
             var productViewModel = CreateProductViewModelFromProductEntity(productEntoty);
 
             DeleteCacheAsync(productViewModel.Id);
@@ -126,13 +126,34 @@ namespace ECommerce.Api.Services
             DeleteCacheAsync(productId.ToString());
         }
 
-        #endregion Implement
+        public async Task<List<ProductViewModel>> GetProductByFilterAsync(string id, string productName, string productTitle)
+        {
+            var cacheResults = await GetFromCacheAsyncFromCacheAsync(id, productName, productTitle);
+            if (cacheResults != null)
+                return cacheResults;
+
+            var products = await _productReadRepository.GetProductByFilterAsync(id, productName, productTitle).ConfigureAwait(false);
+            if (products == null)
+                return new List<ProductViewModel>();
+
+            var productViewModels = CreateProductViewModelFromProducts(products);
+
+            await SetListInToCacheAsync(productViewModels).ConfigureAwait(false);
+
+            return productViewModels;
+        }
+
+        #endregion [ Implement ]
 
         #region [ Cache Private Method ]
 
         private async Task SetInToCacheAsync(ProductViewModel result)
             => await _mongoCacheRepository
                  .CreateAsync(result);
+
+        private async Task SetListInToCacheAsync(List<ProductViewModel> results)
+            => await _mongoCacheRepository
+                 .CreateAsync(results);
 
         private async Task SetManyInToCacheAsync(IEnumerable<ProductViewModel> results)
             => await _mongoCacheRepository
@@ -142,13 +163,16 @@ namespace ECommerce.Api.Services
             => await _mongoCacheRepository
                 .GetAsync(id);
 
+        private async Task<List<ProductViewModel>> GetFromCacheAsyncFromCacheAsync(string id, string productName, string productTitle)
+             => await _mongoCacheRepository
+                   .GetProductByFilterAsync(id, productName, productTitle);
+
         private async Task<IEnumerable<ProductViewModel>> GetFromCacheAsync()
             => await _mongoCacheRepository
                 .GetAsync();
 
         private async void DeleteCacheAsync(string id)
            => await _mongoCacheRepository.RemoveAsync(id);
-
 
         #endregion [ Cache Private Method ]
 
@@ -181,6 +205,28 @@ namespace ECommerce.Api.Services
                 IsFreeDelivery = product.IsFreeDelivery,
                 Weight = product.Weight
             };
+
+        private List<ProductViewModel> CreateProductViewModelFromProducts(List<Product> products)
+        {
+            List<ProductViewModel> productsViewModels = new List<ProductViewModel>();
+            foreach (var item in products)
+            {
+                productsViewModels.Add(new ProductViewModel()
+                {
+                    Id = item.ProductId.ToString(),
+                    ProductName = item.ProductName,
+                    ProductTitle = item.ProductTitle,
+                    ProductDescription = item.ProductDescription,
+                    MainImageName = item.MainImageName,
+                    MainImageTitle = item.MainImageTitle,
+                    MainImageUri = item.MainImageUri,
+                    IsExisting = item.IsExisting,
+                    IsFreeDelivery = item.IsFreeDelivery,
+                    Weight = item.Weight
+                });
+            }
+            return productsViewModels;
+        }
 
         private ProductViewModel CreateProductViewModelFromProductEntity(Product product)
             => new ProductViewModel()
