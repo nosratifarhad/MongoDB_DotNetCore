@@ -23,46 +23,50 @@ builder.Services.Configure<ProductDatabaseSettings>(
     builder.Configuration.GetSection("ProductDatabaseSettings"));
 ```
 
-### you need wapper for use mongodb collection from service
+### you need Mongo Repository for use mongodb collection from service
 
 ```csharp
-public interface IMongoWrapper
+public interface IMongoCacheRepository
 {
-    Task<List<ProductModel>> GetAsync();
+    Task<List<ProductViewModel>> GetAsync();
 
-    Task<ProductModel?> GetAsync(string id);
+    Task<ProductViewModel> GetAsync(string id);
 
-    Task CreateAsync(ProductModel productViewModel);
+    Task<List<ProductViewModel>> GetProductByFilterAsync(string id, string productName, string productTitle);
 
-    Task UpdateAsync(string id, ProductModel productViewModel);
+    Task CreateAsync(ProductViewModel product);
+
+    Task CreateAsync(List<ProductViewModel> results);
+
+    Task CreateManyAsync(IEnumerable<ProductViewModel> productViewModels);
 
     Task RemoveAsync(string id);
-
 }
 ```
 
 ### you should be add dependency injection in Program.cs file :
 
 ```csharp
-#region [ Wrapper ]
+#region [ Cache  ]
 
-builder.Services.AddScoped<IMongoWrapper, MongoWrapper>();
+builder.Services.AddScoped<IMongoCacheRepository, MongoCacheRepository>();
 
-#endregion [ Wrapper ]
+#endregion [ Cache  ]
 ```
 
-### for use collections you should add this code in implementation wrapper
+### for use collections you should add this code in implementation Cache Repository
 
 ```csharp
     #region Fields
 
     private readonly IMongoCollection<ProductModel> _ProductsCollection;
+    private readonly FilterDefinitionBuilder<ProductViewModel> _filter;
 
     #endregion Fields
 
     #region Ctor
 
-    public MongoWrapper(IOptions<ProductDatabaseSettings> settings)
+    public MongoCacheRepository(IOptions<ProductDatabaseSettings> settings)
     {
         var mongoClient = new MongoClient(
       settings.Value.ConnectionString);
@@ -70,8 +74,10 @@ builder.Services.AddScoped<IMongoWrapper, MongoWrapper>();
         var mongoDatabase = mongoClient.GetDatabase(
             settings.Value.DatabaseName);
 
-        _ProductsCollection = mongoDatabase.GetCollection<ProductModel>(
+        _ProductsCollection = mongoDatabase.GetCollection<ProductViewModel>(
             settings.Value.ProductsCollectionName);
+
+        _filter = Builders<ProductViewModel>.Filter;
     }
 
     #endregion Ctor
@@ -81,20 +87,54 @@ builder.Services.AddScoped<IMongoWrapper, MongoWrapper>();
 ### now you can use collection 
 
 ```csharp
-    public async Task CreateAsync(ProductModel productViewModel)
+    public async Task CreateAsync(ProductViewModel productViewModel)
         => await _ProductsCollection.InsertOneAsync(productViewModel);
 
-    public async Task<List<ProductModel>> GetAsync()
+    public async Task CreateAsync(List<ProductViewModel> results)
+           => await _ProductsCollection.InsertManyAsync((IEnumerable<ProductViewModel>)results);
+
+    public async Task CreateManyAsync(IEnumerable<ProductViewModel> productViewModels)
+        => await _ProductsCollection.InsertManyAsync(productViewModels);
+
+    public async Task<List<ProductViewModel>> GetAsync()
         => await _ProductsCollection.Find(_ => true).ToListAsync();
 
-    public async Task<ProductModel?> GetAsync(string id)
-        => await _ProductsCollection.Find(x => x.ProductId == id).FirstOrDefaultAsync();
+    public async Task<ProductViewModel?> GetAsync(string id)
+        => await _ProductsCollection.Find(x => x.Id == id.ToString()).FirstOrDefaultAsync();
+
+    public async Task<List<ProductViewModel>> GetProductByFilterAsync(string id, string productName, string productTitle)
+    {
+        var filters = new List<FilterDefinition<ProductViewModel>>();
+
+        FilterDefinition<ProductViewModel> filter;
+
+        if (!string.IsNullOrEmpty(id))
+        {
+            filters.Add(_filter.Eq(f => f.Id, id));
+        }
+
+        if (!string.IsNullOrEmpty(productName))
+        {
+            filters.Add(_filter.Eq(f => f.ProductName, productName));
+        }
+
+        if (!string.IsNullOrEmpty(productTitle))
+        {
+            filters.Add(_filter.Eq(f => f.ProductTitle, productTitle));
+        }
+
+        filter = _filter.And(filters);
+
+        var find = this._ProductsCollection
+            .Find(filter);
+
+        var result = await find.ToListAsync();
+
+        return result.ConvertAll<ProductViewModel>(c => c);
+    }
 
     public async Task RemoveAsync(string id)
-        => await _ProductsCollection.DeleteOneAsync(id);
-
-    public Task UpdateAsync(string id, ProductModel productViewModel)
-        => _ProductsCollection.ReplaceOneAsync(p => p.ProductId == id, productViewModel);
+        => await _ProductsCollection.FindOneAndDeleteAsync(p => p.Id == id);
 ```
 
 ### images : 

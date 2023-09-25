@@ -54,7 +54,7 @@ public class MongoCacheRepository : IMongoCacheRepository
     {
         var filters = new List<FilterDefinition<ProductViewModel>>();
 
-        FilterDefinition<ProductViewModel> filter = null;
+        FilterDefinition<ProductViewModel> filter;
 
         if (!string.IsNullOrEmpty(id))
         {
