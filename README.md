@@ -139,13 +139,17 @@ builder.Services.AddScoped<IMongoCacheRepository, MongoCacheRepository>();
 
 ### images : 
 
-### swagger api
+### swagger apis
 ![My Remote Image](https://github.com/nosratifarhad/MongoDB/blob/main/imgs/Annotation2.jpg)
 
-### send request for insert in mongodb
+### insert Items in mongodb and sql server
 ![My Remote Image](https://github.com/nosratifarhad/MongoDB/blob/main/imgs/Annotation4.jpg)
 
-### insert in collection mongodb 
+### get items from mongoDB 
 ![My Remote Image](https://github.com/nosratifarhad/MongoDB/blob/main/imgs/Annotation1.jpg)
+
+### items in mongoDB 
+![My Remote Image](https://github.com/nosratifarhad/MongoDB/blob/main/imgs/Annotation5.jpg)
+
 
 
