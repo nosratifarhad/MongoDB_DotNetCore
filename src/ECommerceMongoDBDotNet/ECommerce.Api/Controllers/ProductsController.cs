@@ -62,9 +62,9 @@ namespace ECommerce.Api.Controllers
         /// <summary>
         /// Get Product By Filter
         /// </summary>
-        /// <param name="productId"></param>
+        /// <param name="query"></param>
         /// <returns></returns>
-        [HttpGet("/api/products", Name = nameof(GetProductByFilterAsync))]
+        [HttpGet("/api/products/get-product-by-filter")]
         public async Task<IActionResult> GetProductByFilterAsync([FromQuery] GetProductByFilterQuery query)
         {
             var product = await _productService.GetProductByFilterAsync(query.Id, query.ProductName, query.ProductTitle).ConfigureAwait(false);
